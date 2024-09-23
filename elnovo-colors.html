@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farbpalette - Lenovo</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+        }
+        .rectangle {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .rectangle:hover {
+            transform: scale(1.05);
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lenovo Farbpalette</h1>
+    <div class="container" id="colorContainer"></div>
+    <div id="message"></div>
+
+    <script>
+        const colors = [
+            '#E2231A', '#FF6A00', '#000000', '#E96BAF',
+            '#6F7170', '#3E8DDD', '#C4BEB6', '#4AC0E0',
+            '#D9D8D6', '#6ABF4A', '#171717', '#A4C0E0'
+        ];
+
+        const container = document.getElementById('colorContainer');
+        const message = document.getElementById('message');
+
+        colors.forEach((color, index) => {
+            const rectangle = document.createElement('div');
+            rectangle.className = 'rectangle';
+            rectangle.style.backgroundColor = color;
+            rectangle.textContent = color;
+            rectangle.addEventListener('click', () => copyToClipboard(color));
+            container.appendChild(rectangle);
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                message.textContent = `Farbe ${text} in die Zwischenablage kopiert!`;
+                setTimeout(() => {
+                    message.textContent = '';
+                }, 2000);
+            }, (err) => {
+                console.error('Fehler beim Kopieren: ', err);
+            });
+        }
+
+        function adjustTextColor() {
+            document.querySelectorAll('.rectangle').forEach(rect => {
+                const bgColor = getComputedStyle(rect).backgroundColor;
+                const rgb = bgColor.match(/\d+/g);
+                const brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+                rect.style.color = brightness > 128 ? 'black' : 'white';
+            });
+        }
+
+        adjustTextColor();
+    </script>
+</body>
+</html>
