@@ -42,14 +42,36 @@
             margin-top: 20px;
             font-weight: bold;
         }
+        .lang-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>Lenovo Farbpalette</h1>
+    <div class="lang-selector">
+        <select id="languageSwitcher">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+    <h1 id="title">Lenovo Farbpalette</h1>
     <div class="container" id="colorContainer"></div>
     <div id="message"></div>
 
     <script>
+        const translations = {
+            'de': {
+                'title': 'Lenovo Farbpalette',
+                'messageCopied': 'Farbe {color} in die Zwischenablage kopiert!'
+            },
+            'en': {
+                'title': 'Lenovo Color Palette',
+                'messageCopied': 'Color {color} copied to clipboard!'
+            }
+        };
+
         const colors = [
             '#E2231A', '#FF6A00', '#000000', '#E96BAF',
             '#6F7170', '#3E8DDD', '#C4BEB6', '#4AC0E0',
@@ -58,7 +80,17 @@
 
         const container = document.getElementById('colorContainer');
         const message = document.getElementById('message');
+        const title = document.getElementById('title');
+        const languageSwitcher = document.getElementById('languageSwitcher');
 
+        // Initial Language Setup
+        let currentLang = 'de'; // default language
+        function setLanguage(lang) {
+            currentLang = lang;
+            title.textContent = translations[lang].title;
+        }
+
+        // Populate Color Rectangles
         colors.forEach((color, index) => {
             const rectangle = document.createElement('div');
             rectangle.className = 'rectangle';
@@ -68,14 +100,15 @@
             container.appendChild(rectangle);
         });
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                message.textContent = `Farbe ${text} in die Zwischenablage kopiert!`;
+        function copyToClipboard(color) {
+            navigator.clipboard.writeText(color).then(() => {
+                const messageText = translations[currentLang].messageCopied.replace('{color}', color);
+                message.textContent = messageText;
                 setTimeout(() => {
                     message.textContent = '';
                 }, 2000);
             }, (err) => {
-                console.error('Fehler beim Kopieren: ', err);
+                console.error('Error copying color: ', err);
             });
         }
 
@@ -88,7 +121,13 @@
             });
         }
 
+        // Change language when dropdown is selected
+        languageSwitcher.addEventListener('change', (event) => {
+            setLanguage(event.target.value);
+        });
+
         adjustTextColor();
+        setLanguage(currentLang); // Set initial language on page load
     </script>
 </body>
 </html>
